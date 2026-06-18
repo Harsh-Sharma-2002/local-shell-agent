@@ -21,6 +21,8 @@ def call_local_llm(prompt: str, model_name: str = "qwen3.5:4b") -> str:
                 
             }
         )
+
+   
         return response['message']['content']
         
     except Exception as e:
