@@ -1,28 +1,27 @@
 from email import message
 from langchain_ollama import ChatOllama
+from langchain_core.messages import SystemMessage
 
-from .state import AgentState
-from ..utils.llm import response
+from agent.state import AgentState
+
+
 
 model = ChatOllama(model="qwen3.5:4b",temperature=0.2)
 
-def initial(state:AgentState) -> list[dict]:
-    
-    
-    sys_prompt = {"role": "System",
-                  "content":"You are a simple agent do as you are told"
-                }
-    user_prompt = {"role": "User",
-                  "content": query
-                }
-    return [sys_prompt,user_prompt]
 
 def call_model(state:AgentState) -> dict:
     
-    response = model.invoke(state.messages)
+    chat_history = state.memory
 
-    print(f"LLM: {response}")
-    return {"messages": [response]}
+    system_prompt = SystemMessage(content="You are a simple agent and in given sentence you have to extract the information of the person and return a json file for all info you can find")
+    full_payload = [system_prompt] + chat_history
+
+    response = model.invoke(full_payload)
+
+    return {"message" : [response]}
+
+   
+    
 
 
 
