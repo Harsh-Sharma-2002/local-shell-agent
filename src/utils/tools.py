@@ -9,6 +9,7 @@ def execute_shell_command(command:str) -> str:
         command (str): The exact bash command string to execute (e.g., 'ls -la' or 'cat main.py').
     """
     try:
+        print(f"Tool running command: {command}")
         result = sp.run(command, 
                         shell=True, 
                         capture_output=True,
@@ -23,6 +24,7 @@ def execute_shell_command(command:str) -> str:
         if not output.strip():
             return "[Success: Command executed with no output text returned]"
 
+        print(f"Terminal output: {output}")
         return  output
 
     except sp.TimeoutExpired:

@@ -18,14 +18,14 @@ agent.add_conditional_edges(source="input", path=should_continue,path_map={
     "continue":"llm",
     "exit": END,
 })
-agent.add_conditional_edges(source="llm",
+agent.add_conditional_edges(source= "llm",
                             path=need_tool,
                             path_map={
                                     "no":"input",
                                     "yes":"tools"
                                     }
                             )
-agent.add_edge("tool","llm")
+agent.add_edge("tools","llm")
 
 
 
