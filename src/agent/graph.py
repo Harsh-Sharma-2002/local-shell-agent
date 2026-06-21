@@ -1,21 +1,32 @@
 from agent.state import AgentState
 from langgraph.graph import StateGraph, START, END
-from langgraph.prebuilt import ToolNode
 
-from agent.nodes import llm_node,get_user_input_node
-from agent.decisions import should_continue
+
+from agent.nodes import llm_node,get_user_input_node, tool_node
+from agent.decisions import should_continue, need_tool
 
 
 agent = StateGraph(AgentState)
 
 agent.add_node("input",get_user_input_node)
 agent.add_node("llm",llm_node)
+agent.add_node("tools",tool_node)
+
+
 agent.add_edge(START,"input")
 agent.add_conditional_edges(source="input", path=should_continue,path_map={
     "continue":"llm",
-    "exit": END
+    "exit": END,
 })
-agent.add_edge("llm","input")
+agent.add_conditional_edges(source="llm",
+                            path=need_tool,
+                            path_map={
+                                    "no":"input",
+                                    "yes":"tools"
+                                    }
+                            )
+agent.add_edge("tool","llm")
+
 
 
 a = agent.compile()
