@@ -1,16 +1,31 @@
-import requests
+import subprocess as sp
 
-def get_weather(lat,long):
+def execute_shell_command(command:str) -> str:
     """
-    This is a publicly available API that return weather for given latitide and longitude
+    Executes a raw bash command inside the terminal and returns the results.
+    Use this to read directories (ls), read files (cat), write files (echo), or run scripts.
+    
+    Args:
+        command (str): The exact bash command string to execute (e.g., 'ls -la' or 'cat main.py').
     """
+    try:
+        result = sp.run(command, 
+                        shell=True, 
+                        capture_output=True,
+                        text=True, 
+                        timeout=10
+                        )
 
-    response  = requests.get(f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={long}&current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m")
+        output = result.stdout
+        if result.stderr:
+            output += f"\n[STDERR]: {result.stderr}"
 
-    data = response.json()
-    return data["current"]
+        if not output.strip():
+            return "[Success: Command executed with no output text returned]"
 
+        return  output
 
-ans = get_weather(0,0)
-
-print(ans)
+    except sp.TimeoutExpired:
+        return "[ERROR]: Command execution timed out after 10 seconds. Do not run blocking commands."
+    except Exception as e:
+        return f"[ERROR]: System failed to execute command: {str(e)}"

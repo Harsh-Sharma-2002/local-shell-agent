@@ -7,7 +7,7 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage,BaseM
 
 
 class AgentState(BaseModel):
-    memory: Annotated[Sequence[HumanMessage],add_messages]
+    memory: Annotated[Sequence[BaseMessage],add_messages]
 
     
 
