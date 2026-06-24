@@ -1,18 +1,20 @@
-from email import message
+import asyncio
 from langchain_ollama import ChatOllama
 from langchain_core.messages import HumanMessage, SystemMessage
 from langgraph.prebuilt import ToolNode
 
-from agent.decisions import should_continue
 from agent.state import AgentState
-from utils.tools import execute_shell_command
+#from utils.tools import execute_shell_command
+from utils.mcp_client import get_mcp_tools_as_langchain
 
 
 
 base_model = ChatOllama(model="qwen3.5:4b", temperature=0.2)
-model_with_tools = base_model.bind_tools([execute_shell_command])
 
-tool_node = ToolNode([execute_shell_command],messages_key="memory")
+mcp_tool_list = asyncio.run(get_mcp_tools_as_langchain())
+model_with_tools = base_model.bind_tools(mcp_tool_list)
+
+tool_node = ToolNode(mcp_tool_list,messages_key="memory")
 
 
 def get_user_input_node(state:AgentState) -> dict:
